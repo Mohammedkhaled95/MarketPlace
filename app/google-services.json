@@ -1,0 +1,62 @@
+{
+  "project_info": {
+    "project_number": "453619841833",
+    "firebase_url": "https://gp-marketplace.firebaseio.com",
+    "project_id": "gp-marketplace",
+    "storage_bucket": "gp-marketplace.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:453619841833:android:e385b7c24851a13b",
+        "android_client_info": {
+          "package_name": "com.example.khaled.shopz"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "453619841833-k9cvonprjh51k91mva61o6to2kdlrvtc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.khaled.shopz",
+            "certificate_hash": "820bc66e49b222f82eb55297932962cfb72cfcc4"
+          }
+        },
+        {
+          "client_id": "453619841833-ifsqa7aje1ted3v4epm65v2jbu4eujda.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBmdRii1ln3UKld1nqWtF_0eKdVpewW8wA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "453619841833-ifsqa7aje1ted3v4epm65v2jbu4eujda.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "453619841833-g39gptolh25b8teu8jjn6milqmf5e867.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.Naggar.MarketPlace"
+              }
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
