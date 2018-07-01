@@ -19,6 +19,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,8 +31,11 @@ import com.example.khaled.shopz.ViewHolder.ItemViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 public class HomeActivity extends AppCompatActivity
@@ -40,10 +45,15 @@ public class HomeActivity extends AppCompatActivity
     //Firebase
     FirebaseDatabase mDatabase;
     DatabaseReference mItemsReference;
+    DatabaseReference mSuperMarketReference;
     FirebaseAuth mAuth;
     FirebaseUser currentUser;
 
+
     Item clickItem;
+
+    String name;
+    String phone;
 
     //Views
     RecyclerView itemRecyclerView;
@@ -55,6 +65,9 @@ public class HomeActivity extends AppCompatActivity
     ImageView navImg;
     TextView navName;
     TextView navEmail;
+
+    ImageButton editBtn,deleteBtn;
+
 
 
 
@@ -97,11 +110,49 @@ public class HomeActivity extends AppCompatActivity
         currentUser = mAuth.getCurrentUser();
         mDatabase = FirebaseDatabase.getInstance();
         mItemsReference = mDatabase.getReference("SuperMarkets").child(currentUser.getUid()).child("items");
+        mSuperMarketReference = mDatabase.getReference("SuperMarkets").child(currentUser.getUid());
 
 
+       /* if (mSuperMarketReference.child("image").toString() != null && !mSuperMarketReference.child("image").toString().isEmpty()) {
+            Picasso.with(getBaseContext())
+                    .load(mSuperMarketReference.child("image").toString())
+                    .into(navImg);
+        }
+        else
+        {
+            Toast.makeText(this, "Image is empty", Toast.LENGTH_SHORT).show();
+        }*/
 
+        mSuperMarketReference.child("ownerName").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                name = dataSnapshot.getValue().toString();
+                navName.setText(name);
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        mSuperMarketReference.child("phone").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                phone = dataSnapshot.getValue().toString();
+                Log.e(TAG, "onDataChange: "+phone );
+                navEmail.setText(phone);
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
         //create view
-        itemRecyclerView = (RecyclerView) findViewById(R.id.items_list);
+         itemRecyclerView = (RecyclerView) findViewById(R.id.items_list);
         itemRecyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         itemRecyclerView.setLayoutManager(layoutManager);
@@ -148,12 +199,57 @@ public class HomeActivity extends AppCompatActivity
                     @Override
                     public void onCLick(View view, int position, boolean isLongClick) {
 
-                        Toast.makeText(HomeActivity.this, clickItem.getName(), Toast.LENGTH_SHORT).show();
-                       /* Intent foodListIntent = new Intent(Home.this, FoodList.class);
+                        Toast.makeText(HomeActivity.this, "ok ", Toast.LENGTH_SHORT).show();
+                        editBtn = (ImageButton) view.findViewById(R.id.edit_item_btn); 
+                        deleteBtn = (ImageButton) view.findViewById(R.id.delete_item_btn);
+                        
+                        deleteBtn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Toast.makeText(HomeActivity.this, "action delete", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        /* Intent foodListIntent = new Intent(Home.this, FoodList.class);
                         foodListIntent.putExtra("categoryID",adapter.getRef(position).getKey());
                         startActivity(foodListIntent);*/
                     }
                 });
+            }
+
+            @Override
+            public ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                ItemViewHolder viewHolder = super.onCreateViewHolder(parent, viewType);
+                viewHolder.setItemclickListener(new ItemClickListener() {
+                    @Override
+                    public void onCLick(View view, int position, boolean isLongClick) {
+
+                        if (isLongClick == true){
+                            //long click
+                            view.findViewById(R.id.delete_item_btn).setOnClickListener(
+                                    new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            Toast.makeText(HomeActivity.this, "delete item", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                            );
+                            view.findViewById(R.id.edit_item_btn).setOnClickListener(
+                                    new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            Toast.makeText(HomeActivity.this, "delete item", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                            );
+
+                        }
+                        else if (isLongClick == false){
+                            //small click
+
+                        }
+                    }
+                });
+                return viewHolder;
             }
         };
         itemRecyclerView.setAdapter(adapter);

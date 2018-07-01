@@ -27,6 +27,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -152,7 +153,8 @@ public class SignupActivity extends AppCompatActivity {
                             Log.d(TAG, "createUserWithEmail:success");
                             Toast.makeText(SignupActivity.this, "account created", Toast.LENGTH_SHORT).show();
                             current_user = mAuth.getCurrentUser();
-                            saveUserData();
+                            String  deviceToken = FirebaseInstanceId.getInstance().getToken();
+                            saveUserData( deviceToken);
 
                             progressBar.setVisibility(View.INVISIBLE);
                             startActivity(new Intent(SignupActivity.this,LoginActivity.class));
@@ -175,7 +177,7 @@ public class SignupActivity extends AppCompatActivity {
 
     }
 
-    private void saveUserData() {
+    private void saveUserData(String deviceToken) {
 
         final SuperMarket superMarket = new SuperMarket();
 
@@ -185,6 +187,7 @@ public class SignupActivity extends AppCompatActivity {
         superMarket.setPhone(phoneNumber);
         superMarket.setImage("");
         superMarket.setRate("");
+        superMarket.setDeviceToken(deviceToken);
        // superMarket.setItems("");
 
 

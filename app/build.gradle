@@ -33,7 +33,10 @@ dependencies {
     implementation 'com.firebaseui:firebase-ui-database:1.2.0'
 
 
+    implementation 'com.google.firebase:firebase-messaging:11.0.4'
 }
+
+
 
 
 

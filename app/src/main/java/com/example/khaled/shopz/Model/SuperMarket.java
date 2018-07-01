@@ -11,6 +11,16 @@ public class SuperMarket {
     private String ownerName;
     private String phone;
     private String rate;
+
+    public String getDeviceToken() {
+        return deviceToken;
+    }
+
+    public void setDeviceToken(String deviceToken) {
+        this.deviceToken = deviceToken;
+    }
+
+    private String deviceToken;
     private String superMarketname;
     private List<Item> items;
 

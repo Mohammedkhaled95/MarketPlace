@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.khaled.shopz.Interface.ItemClickListener;
 import com.example.khaled.shopz.R;
@@ -32,6 +33,20 @@ public class ItemViewHolder  extends RecyclerView.ViewHolder implements View.OnC
         deleteBtn = (ImageButton) itemView.findViewById(R.id.delete_item_btn);
 
 
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                itemClickListener.onCLick(view , getAdapterPosition(),false);
+            }
+        });
+
+        itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                itemClickListener.onCLick(view , getAdapterPosition() , true);
+                return true;
+            }
+        });
 
     }
 
@@ -44,6 +59,7 @@ public class ItemViewHolder  extends RecyclerView.ViewHolder implements View.OnC
 
     @Override
     public void onClick(View view) {
+
         itemClickListener.onCLick(view,getAdapterPosition(),false);
 
 

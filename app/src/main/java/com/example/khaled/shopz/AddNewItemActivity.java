@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.khaled.shopz.Model.Item;
+import com.example.khaled.shopz.Model.Notification;
 import com.example.khaled.shopz.Model.SuperMarket;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -47,6 +48,8 @@ public class AddNewItemActivity extends AppCompatActivity {
     //FireBase
     FirebaseAuth mAuth;
     FirebaseDatabase mDatabase;
+    DatabaseReference mNotificationsRefernce;
+
     DatabaseReference mItemRefernce;
     StorageReference mStorageRef;
     FirebaseUser current_user;
@@ -74,6 +77,8 @@ public class AddNewItemActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         current_user = mAuth.getCurrentUser();
         mDatabase = FirebaseDatabase.getInstance();
+        mNotificationsRefernce =mDatabase.getReference("Notifications");
+
         mItemRefernce = mDatabase.getReference("SuperMarkets").child(current_user.getUid()).child("items");
         mStorageRef = FirebaseStorage.getInstance().getReference("Images");
 
@@ -104,7 +109,25 @@ public class AddNewItemActivity extends AppCompatActivity {
                 } else {
                     //save product data to firebase
 
+
+                   String notiKey =  mNotificationsRefernce.push().getKey();
+
+                   Notification notification = new Notification();
+                    notification.setName("Mohammed");
+                    notification.setPhone("0111480056561");
+
+                  /*
+                  *  mNotificationsRefernce.child(notiKey).setValue(notification)
+                   .addOnSuccessListener(new OnSuccessListener<Void>() {
+                       @Override
+                       public void onSuccess(Void aVoid) {
+                           Toast.makeText(AddNewItemActivity.this, "success", Toast.LENGTH_SHORT).show();
+
+                       }
+                   });*/
                     saveNewProduct();
+
+
                 }
             }
         });
