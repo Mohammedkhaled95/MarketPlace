@@ -1,5 +1,6 @@
 package com.example.khaled.shopz;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -46,7 +47,8 @@ public class SignupActivity extends AppCompatActivity {
     EditText ownerNameEt,emailEt,passwordEt,supermarketNameEt,supermarketPhoneEt,supermarketLocationEt;
     Button saveBtn;
     ImageView supermarketImage;
-    ProgressBar progressBar;
+
+    ProgressDialog progressDialog;
 
     FirebaseAuth mAuth;
     FirebaseDatabase firebaseDatabase;
@@ -79,7 +81,9 @@ public class SignupActivity extends AppCompatActivity {
         passwordEt = (EditText) findViewById(R.id.password_editText);
         saveBtn = (Button)findViewById(R.id.save_button);
         supermarketImage = (ImageView) findViewById(R.id.supermarket_imageView);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+
+        progressDialog = new ProgressDialog(SignupActivity.this);
+        progressDialog.setMessage("Creating account, please wait");
 
 
         //intialize firebase
@@ -123,13 +127,12 @@ public class SignupActivity extends AppCompatActivity {
                 phoneNumber = supermarketPhoneEt.getText().toString();
 
 
-                progressBar.setVisibility(View.VISIBLE);
-
+                progressDialog.show();
                 if ( !isValidInputs()){//supermarketImage == null ||
 
-                    progressBar.setVisibility(View.INVISIBLE);
-                    Toast.makeText(SignupActivity.this, "Not valid inputs", Toast.LENGTH_SHORT).show();
-                }
+                progressDialog.dismiss();
+                Toast.makeText(SignupActivity.this, "Not valid inputs", Toast.LENGTH_SHORT).show();
+                                }
                 else
                 {
                     createNewUser();
@@ -156,7 +159,7 @@ public class SignupActivity extends AppCompatActivity {
                             String  deviceToken = FirebaseInstanceId.getInstance().getToken();
                             saveUserData( deviceToken);
 
-                            progressBar.setVisibility(View.INVISIBLE);
+                            progressDialog.dismiss();
                             startActivity(new Intent(SignupActivity.this,LoginActivity.class));
                             finish();
                         } else {
@@ -167,7 +170,7 @@ public class SignupActivity extends AppCompatActivity {
                             Toast.makeText(SignupActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
 
-                            progressBar.setVisibility(View.INVISIBLE);
+                            progressDialog.dismiss();
                             //updateUI(null);
                         }
 
