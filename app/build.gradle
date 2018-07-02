@@ -4,7 +4,7 @@ android {
     compileSdkVersion 26
     defaultConfig {
         applicationId "com.example.khaled.shopz"
-        minSdkVersion 19
+        minSdkVersion 15
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
@@ -34,6 +34,9 @@ dependencies {
 
 
     implementation 'com.google.firebase:firebase-messaging:11.0.4'
+
+
+    implementation 'com.github.florent37:materialtextfield:1.0.7'
 }
 
 

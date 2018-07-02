@@ -116,15 +116,14 @@ public class AddNewItemActivity extends AppCompatActivity {
                     notification.setName("Mohammed");
                     notification.setPhone("0111480056561");
 
-                  /*
-                  *  mNotificationsRefernce.child(notiKey).setValue(notification)
+                    mNotificationsRefernce.child(notiKey).setValue(notification)
                    .addOnSuccessListener(new OnSuccessListener<Void>() {
                        @Override
                        public void onSuccess(Void aVoid) {
                            Toast.makeText(AddNewItemActivity.this, "success", Toast.LENGTH_SHORT).show();
 
                        }
-                   });*/
+                   });
                     saveNewProduct();
 
 
