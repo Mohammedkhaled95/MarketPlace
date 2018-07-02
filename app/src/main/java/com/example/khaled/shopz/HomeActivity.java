@@ -1,6 +1,8 @@
 package com.example.khaled.shopz;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.Image;
 import android.os.Bundle;
@@ -56,10 +58,12 @@ public class HomeActivity extends AppCompatActivity
     String phone;
     String profileImage;
 
+    AlertDialog.Builder builder;
+
     //Views
     RecyclerView itemRecyclerView;
     RecyclerView.LayoutManager layoutManager;
-    FirebaseRecyclerAdapter<Item,ItemViewHolder> adapter;
+    FirebaseRecyclerAdapter<Item, ItemViewHolder> adapter;
 
     //navigation views
     ProgressDialog progressDialog;
@@ -67,10 +71,25 @@ public class HomeActivity extends AppCompatActivity
     TextView navName;
     TextView navEmail;
 
-    ImageButton editBtn,deleteBtn;
+    ImageButton editBtn, deleteBtn;
+    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            switch (which) {
+                case DialogInterface.BUTTON_POSITIVE:
+                    //Yes button clicked
+                    mAuth.signOut();
+                    startActivity(new Intent(HomeActivity.this, LoginActivity.class));
+                    finish();
+                    break;
 
-
-
+                case DialogInterface.BUTTON_NEGATIVE:
+                    //No button clicked
+                    dialog.dismiss();
+                    break;
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,14 +118,7 @@ public class HomeActivity extends AppCompatActivity
         navEmail = (TextView) navheader.findViewById(R.id.nav_email);
 
 
-
-
-
-
-
-
-
-                //intailize firebase
+        //intailize firebase
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         mDatabase = FirebaseDatabase.getInstance();
@@ -126,29 +138,24 @@ public class HomeActivity extends AppCompatActivity
         mSuperMarketReference.child("image").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.getValue() != null){
+                if (dataSnapshot.getValue() != null) {
 
                     profileImage = dataSnapshot.getValue().toString();
 
-                    if (profileImage != null){
-                        if (!profileImage.isEmpty()){
+                    if (profileImage != null) {
+                        if (!profileImage.isEmpty()) {
                             Picasso.with(HomeActivity.this)
                                     .load(profileImage)
                                     .into(navImg);
-                        }
-                        else
-                        {
+                        } else {
                             navImg.setImageDrawable(getResources().getDrawable(R.drawable.user_account_photo));
 
                         }
-                    }
-                    else{
+                    } else {
                         navImg.setImageDrawable(getResources().getDrawable(R.drawable.user_account_photo));
 
                     }
-                }
-                else
-                {
+                } else {
                     navImg.setImageDrawable(getResources().getDrawable(R.drawable.user_account_photo));
                 }
             }
@@ -162,11 +169,11 @@ public class HomeActivity extends AppCompatActivity
         mSuperMarketReference.child("ownerName").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.getValue() != null){
+                if (dataSnapshot.getValue() != null) {
 
                     name = dataSnapshot.getValue().toString();
-                    navName.setText(name);}
-                    else {
+                    navName.setText(name);
+                } else {
                     navName.setText("fake account");
                 }
 
@@ -178,15 +185,15 @@ public class HomeActivity extends AppCompatActivity
             }
         });
 
-        String email = null ;
-        if (currentUser != null){
+        String email = null;
+        if (currentUser != null) {
             email = currentUser.getEmail();
-            Log.e(TAG, "onCreate: current user data "+currentUser.toString()+"\n"+currentUser.getEmail()+"\n"+currentUser.getDisplayName());
+            Log.e(TAG, "onCreate: current user data " + currentUser.toString() + "\n" + currentUser.getEmail() + "\n" + currentUser.getDisplayName());
         }
-        if (email != null && !email.isEmpty()){
+        if (email != null && !email.isEmpty()) {
             navEmail.setText(email);
 
-        }else {
+        } else {
 
             mSuperMarketReference.child("phone").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -196,8 +203,7 @@ public class HomeActivity extends AppCompatActivity
                         phone = dataSnapshot.getValue().toString();
                         Log.e(TAG, "onDataChange: " + phone);
                         navEmail.setText(phone);
-                    }
-                    else {
+                    } else {
                         navEmail.setText("fake account");
                     }
                 }
@@ -209,12 +215,17 @@ public class HomeActivity extends AppCompatActivity
             });
         }
         //create view
-         itemRecyclerView = (RecyclerView) findViewById(R.id.items_list);
+        itemRecyclerView = (RecyclerView) findViewById(R.id.items_list);
         itemRecyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         itemRecyclerView.setLayoutManager(layoutManager);
 
         loadmenu();
+
+
+        builder = new AlertDialog.Builder(HomeActivity.this);
+        builder.setMessage("Are you sure, you want to Sign out ?").setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener);
 
     }
 
@@ -230,24 +241,24 @@ public class HomeActivity extends AppCompatActivity
             protected void populateViewHolder(ItemViewHolder viewHolder, Item model, int position) {
 
                 viewHolder.itemName.setText(model.getName());
-                viewHolder.itemPrice.setText("Price : "+model.getPrice()+" $");
+                viewHolder.itemPrice.setText("Price : " + model.getPrice() + " $");
                 viewHolder.itemDescription.setText(model.getDescription());
 
-                Log.e(TAG, "populateViewHolder: menu  :"+model.toString());
+                Log.e(TAG, "populateViewHolder: menu  :" + model.toString());
 
 
-                if (!model.getImage().isEmpty()){
-                Picasso.with(getBaseContext()).load(model.getImage())
-                        .into(viewHolder.itemImage);}
-                        else {
+                if (!model.getImage().isEmpty()) {
+                    Picasso.with(getBaseContext()).load(model.getImage())
+                            .into(viewHolder.itemImage);
+                } else {
                     Picasso.with(getBaseContext())
                             .load(R.drawable.plusbutton)
                             .into(viewHolder.itemImage);
                 }
 
-                Log.e(TAG, "populateViewHolder: imaaaaage "+model.getImage() );
+                Log.e(TAG, "populateViewHolder: imaaaaage " + model.getImage());
 
-                 clickItem = model;
+                clickItem = model;
 
 
                 viewHolder.setItemclickListener(new ItemClickListener() {
@@ -257,9 +268,9 @@ public class HomeActivity extends AppCompatActivity
                     public void onCLick(View view, int position, boolean isLongClick) {
 
                         Toast.makeText(HomeActivity.this, "ok ", Toast.LENGTH_SHORT).show();
-                        editBtn = (ImageButton) view.findViewById(R.id.edit_item_btn); 
+                        editBtn = (ImageButton) view.findViewById(R.id.edit_item_btn);
                         deleteBtn = (ImageButton) view.findViewById(R.id.delete_item_btn);
-                        
+
                         deleteBtn.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
@@ -280,7 +291,7 @@ public class HomeActivity extends AppCompatActivity
                     @Override
                     public void onCLick(View view, int position, boolean isLongClick) {
 
-                        if (isLongClick == true){
+                        if (isLongClick == true) {
                             //long click
                             view.findViewById(R.id.delete_item_btn).setOnClickListener(
                                     new View.OnClickListener() {
@@ -299,8 +310,7 @@ public class HomeActivity extends AppCompatActivity
                                     }
                             );
 
-                        }
-                        else if (isLongClick == false){
+                        } else if (isLongClick == false) {
                             //small click
 
                         }
@@ -340,10 +350,9 @@ public class HomeActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_add_new_item) {
             //go to create new item
-            startActivity(new Intent(HomeActivity.this,AddNewItemActivity.class));
+            startActivity(new Intent(HomeActivity.this, AddNewItemActivity.class));
             return true;
-        }
-        else if (id == R.id.action_notification){
+        } else if (id == R.id.action_notification) {
             //handle notification
         }
 
@@ -358,13 +367,26 @@ public class HomeActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_about) {
-            // Handle the camera action
-            Toast.makeText(this, "About", Toast.LENGTH_SHORT).show();
-        } 
+        if (id == R.id.nav_add_new_item) {
+            startActivity(new Intent(HomeActivity.this, AddNewItemActivity.class));
+
+        } else if (id == R.id.nav_oder_notifications) {
+            Toast.makeText(this, "Notifications", Toast.LENGTH_SHORT).show();
+
+
+        } else if (id == R.id.nav_edit) {
+            Toast.makeText(this, "edits ", Toast.LENGTH_SHORT).show();
+
+
+        } else if (id == R.id.nav_sign_out) {
+            builder.show();
+
+
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
 }
