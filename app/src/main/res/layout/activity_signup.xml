@@ -45,6 +45,7 @@
                 android:drawableLeft="@drawable/owner_name"
                 android:drawablePadding="8dp"
                 android:fontFamily="casual"
+                android:textColor="@color/colorWhite"
 
                 />
 
@@ -69,6 +70,8 @@
                 android:drawableLeft="@drawable/username_icon"
                 android:drawablePadding="8dp"
                 android:fontFamily="casual"
+                android:textColor="@color/colorWhite"
+
 
                 />
 
@@ -94,6 +97,8 @@
                 android:drawableLeft="@drawable/password_icon"
                 android:drawablePadding="8dp"
                 android:fontFamily="casual"
+                android:textColor="@color/colorWhite"
+
                 />
 
         </android.support.design.widget.TextInputLayout>
@@ -117,6 +122,8 @@
                 android:drawableLeft="@drawable/owner_name"
                 android:drawablePadding="8dp"
                 android:fontFamily="casual"
+                android:textColor="@color/colorWhite"
+
 
                 />
 
@@ -141,6 +148,8 @@
                 android:drawableLeft="@drawable/phone_number_icon"
                 android:drawablePadding="8dp"
                 android:fontFamily="casual"
+                android:textColor="@color/colorWhite"
+
 
                 />
 
@@ -166,6 +175,8 @@
                 android:drawableLeft="@drawable/location_icon"
                 android:drawablePadding="8dp"
                 android:fontFamily="casual"
+                android:textColor="@color/colorWhite"
+
 
                 />
 

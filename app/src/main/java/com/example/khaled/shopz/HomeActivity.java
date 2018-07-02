@@ -54,6 +54,7 @@ public class HomeActivity extends AppCompatActivity
 
     String name;
     String phone;
+    String profileImage;
 
     //Views
     RecyclerView itemRecyclerView;
@@ -122,12 +123,52 @@ public class HomeActivity extends AppCompatActivity
         {
             Toast.makeText(this, "Image is empty", Toast.LENGTH_SHORT).show();
         }*/
+        mSuperMarketReference.child("image").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() != null){
+
+                    profileImage = dataSnapshot.getValue().toString();
+
+                    if (profileImage != null){
+                        if (!profileImage.isEmpty()){
+                            Picasso.with(HomeActivity.this)
+                                    .load(profileImage)
+                                    .into(navImg);
+                        }
+                        else
+                        {
+                            navImg.setImageDrawable(getResources().getDrawable(R.drawable.user_account_photo));
+
+                        }
+                    }
+                    else{
+                        navImg.setImageDrawable(getResources().getDrawable(R.drawable.user_account_photo));
+
+                    }
+                }
+                else
+                {
+                    navImg.setImageDrawable(getResources().getDrawable(R.drawable.user_account_photo));
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         mSuperMarketReference.child("ownerName").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                name = dataSnapshot.getValue().toString();
-                navName.setText(name);
+                if (dataSnapshot.getValue() != null){
+
+                    name = dataSnapshot.getValue().toString();
+                    navName.setText(name);}
+                    else {
+                    navName.setText("fake account");
+                }
 
             }
 
@@ -137,20 +178,36 @@ public class HomeActivity extends AppCompatActivity
             }
         });
 
-        mSuperMarketReference.child("phone").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                phone = dataSnapshot.getValue().toString();
-                Log.e(TAG, "onDataChange: "+phone );
-                navEmail.setText(phone);
+        String email = null ;
+        if (currentUser != null){
+            email = currentUser.getEmail();
+            Log.e(TAG, "onCreate: current user data "+currentUser.toString()+"\n"+currentUser.getEmail()+"\n"+currentUser.getDisplayName());
+        }
+        if (email != null && !email.isEmpty()){
+            navEmail.setText(email);
 
-            }
+        }else {
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+            mSuperMarketReference.child("phone").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.getValue() != null) {
 
-            }
-        });
+                        phone = dataSnapshot.getValue().toString();
+                        Log.e(TAG, "onDataChange: " + phone);
+                        navEmail.setText(phone);
+                    }
+                    else {
+                        navEmail.setText("fake account");
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
         //create view
          itemRecyclerView = (RecyclerView) findViewById(R.id.items_list);
         itemRecyclerView.setHasFixedSize(true);
@@ -294,24 +351,17 @@ public class HomeActivity extends AppCompatActivity
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
+
+
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_about) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }
+            Toast.makeText(this, "About", Toast.LENGTH_SHORT).show();
+        } 
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

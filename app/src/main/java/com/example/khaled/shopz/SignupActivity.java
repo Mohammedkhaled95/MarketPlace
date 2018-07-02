@@ -11,7 +11,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.khaled.shopz.Model.Item;
@@ -118,27 +117,26 @@ public class SignupActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                //intialize String (user data)
-                ownerName = ownerNameEt.getText().toString();
-                email = emailEt.getText().toString();
-                password = passwordEt.getText().toString();
-                supermarketName = supermarketNameEt.getText().toString();
-                supermarkertAddress = supermarketLocationEt.getText().toString();
-                phoneNumber = supermarketPhoneEt.getText().toString();
+
 
 
                 progressDialog.show();
-                if ( !isValidInputs()){//supermarketImage == null ||
-
-                progressDialog.dismiss();
-                Toast.makeText(SignupActivity.this, "Not valid inputs", Toast.LENGTH_SHORT).show();
-                                }
-                else
-                {
-                    createNewUser();
 
 
-                }
+                  if ( !isValidInputs() ){
+
+
+                      progressDialog.dismiss();
+                      Toast.makeText(SignupActivity.this, "Not valid inputs", Toast.LENGTH_SHORT).show();
+                  }
+                  else
+                  {
+                      createNewUser();
+
+
+                  }
+
+
 
                     }
         });
@@ -148,35 +146,32 @@ public class SignupActivity extends AppCompatActivity {
 
 
         mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                     @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
+                    public void onSuccess(AuthResult authResult) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
-                            Toast.makeText(SignupActivity.this, "account created", Toast.LENGTH_SHORT).show();
                             current_user = mAuth.getCurrentUser();
                             String  deviceToken = FirebaseInstanceId.getInstance().getToken();
-                            saveUserData( deviceToken);
+                            saveUserData(deviceToken);
 
-                            progressDialog.dismiss();
                             startActivity(new Intent(SignupActivity.this,LoginActivity.class));
-                            finish();
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                            Log.e(TAG, "onComplete: "+task.toString() );
-                            Log.e(TAG, "onComplete: "+task.getException().toString() );
-                            Toast.makeText(SignupActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
+                          finish();
 
-                            progressDialog.dismiss();
-                            //updateUI(null);
-                        }
-
-                        // ...
                     }
-                });
+                })
+        .addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                progressDialog.dismiss();
+
+                Log.e(TAG, "onFailure: "+e.getMessage()+"\n"+e.toString() );
+                Toast.makeText(SignupActivity.this, "creating account failed",
+                        Toast.LENGTH_SHORT).show();
+
+
+            }
+        });
 
     }
 
@@ -195,41 +190,51 @@ public class SignupActivity extends AppCompatActivity {
 
 
         superMarket_table.child(current_user.getUid()).setValue(superMarket)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()){
-                            Toast.makeText(SignupActivity.this, "Data Saved", Toast.LENGTH_SHORT).show();
+                    public void onSuccess(Void aVoid) {
 
-                            String current_user_id  = current_user.getUid();
 
-                            mStorageRef.child(current_user_id+".jpeg").putFile(imageUri)
-                                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                                        @Override
-                                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                                Toast.makeText(SignupActivity.this, "image saved", Toast.LENGTH_SHORT).show();
-                                                String downloadedImage = taskSnapshot.getDownloadUrl().toString();
-                                                        superMarket_table.child(current_user.getUid())
-                                                                .child("image").setValue(downloadedImage);
+                        String current_user_id  = current_user.getUid();
 
-                                        }
-                                    }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Toast.makeText(SignupActivity.this, "image saving failed", Toast.LENGTH_SHORT).show();
-                                    Log.e(TAG, "onFailure: "+e.getMessage()+"\n"+e.toString() );
+                        mStorageRef.child(current_user_id+".jpeg").putFile(imageUri)
+                                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                    @Override
+                                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                        String downloadedImage = taskSnapshot.getDownloadUrl().toString();
+                                        superMarket_table.child(current_user.getUid())
+                                                .child("image").setValue(downloadedImage)
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                Toast.makeText(SignupActivity.this, "image saved to DB", Toast.LENGTH_SHORT).show();
+                                            }
+                                        })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Log.e(TAG, "onFailure: of return image url to table *** "+e.getMessage()+"\n"+e.toString() );
+                                                progressDialog.dismiss();
 
-                                }
-                            });
-                        }
+                                            }
+                                        });
+
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.e(TAG, "onFailure: of putting image to storage "+e.getMessage()+"\n"+e.toString() );
+
+                            }
+                        });
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Toast.makeText(SignupActivity.this, "failure save..", Toast.LENGTH_SHORT).show();
-                        Log.e(TAG, "onFailure: "+e.toString() );
-                        Log.e(TAG, "onFailure: "+e.getMessage() );
+                        Log.e(TAG, "onFailure: of putting data to DB"+e.toString() );
+                        Log.e(TAG, "onFailure: of putting datato DB"+e.getMessage() );
                     }
                 });;
 
@@ -242,30 +247,45 @@ public class SignupActivity extends AppCompatActivity {
     }
 
 
-    private boolean isValidInputs() {
-        if (ownerName != null && !ownerName.isEmpty()
-                &&email != null && !email.isEmpty()
-                &&password != null && !password.isEmpty()
-                &&supermarketName != null && !supermarketName.isEmpty()
-                &&supermarkertAddress != null && !supermarkertAddress.isEmpty()
-                &&phoneNumber != null && !phoneNumber.isEmpty())
-        {
-            return true;
-
-        }
-        return false;
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (requestCode == PICK_IMAGE){
 
+        if (resultCode != RESULT_CANCELED){
+
             imageUri=data.getData();
             supermarketImage.setImageURI(imageUri);
 
-
+        }
         }
 
+    }
+
+    private boolean isValidInputs() {
+
+        //intialize String (user data)
+        ownerName = ownerNameEt.getText().toString();
+        email = emailEt.getText().toString();
+        password = passwordEt.getText().toString();
+        supermarketName = supermarketNameEt.getText().toString();
+        supermarkertAddress = supermarketLocationEt.getText().toString();
+        phoneNumber = supermarketPhoneEt.getText().toString();
+
+        if (ownerName != null && !ownerName.isEmpty()
+                &&email != null && !email.isEmpty()
+                &&password != null && !password.isEmpty()
+                &&supermarketName != null && !supermarketName.isEmpty()
+                &&supermarkertAddress != null && !supermarkertAddress.isEmpty()
+                &&phoneNumber != null && !phoneNumber.isEmpty()
+                && supermarketImage != null
+                && imageUri != null && !imageUri.toString().isEmpty()
+                )
+        {
+            return true;
+
+        }
+        return false;
     }
 }
