@@ -1,6 +1,7 @@
 package com.example.khaled.shopz;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -22,6 +23,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -40,8 +42,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
-public class HomeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class HomeActivity extends AppCompatActivity  implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = "HomeActivity";
     //Firebase
@@ -58,7 +59,9 @@ public class HomeActivity extends AppCompatActivity
     String phone;
     String profileImage;
 
-    AlertDialog.Builder builder;
+    AlertDialog.Builder signOutBuilder;
+    Dialog deleteItemDialoge;
+    Dialog makeChoiceBuilder;
 
     //Views
     RecyclerView itemRecyclerView;
@@ -71,7 +74,17 @@ public class HomeActivity extends AppCompatActivity
     TextView navName;
     TextView navEmail;
 
+
+    TextView choiceDisplayTv;
+    TextView choiceEditTv;
+    TextView choiceDelteTv;
+    
+    Button yesDeleteBtn;
+    Button noDeleteBtn;
+
     ImageButton editBtn, deleteBtn;
+
+
     DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which) {
@@ -126,15 +139,105 @@ public class HomeActivity extends AppCompatActivity
         mSuperMarketReference = mDatabase.getReference("SuperMarkets").child(currentUser.getUid());
 
 
-       /* if (mSuperMarketReference.child("image").toString() != null && !mSuperMarketReference.child("image").toString().isEmpty()) {
-            Picasso.with(getBaseContext())
-                    .load(mSuperMarketReference.child("image").toString())
-                    .into(navImg);
-        }
-        else
-        {
-            Toast.makeText(this, "Image is empty", Toast.LENGTH_SHORT).show();
-        }*/
+
+
+       //load navigation
+        loadNavigation();
+
+
+        //create view
+        itemRecyclerView = (RecyclerView) findViewById(R.id.items_list);
+        itemRecyclerView.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(this);
+        itemRecyclerView.setLayoutManager(layoutManager);
+
+        //load menu of items
+        loadmenu();
+
+
+        //sign out dialoge
+        signOutBuilder = new AlertDialog.Builder(HomeActivity.this);
+        signOutBuilder.setMessage("Are you sure, you want to Sign out ?")
+                      .setPositiveButton("Yes", dialogClickListener)
+                      .setNegativeButton("No", dialogClickListener);
+
+        //delete dialoge
+        delteDialoge();
+
+        //make choice after click
+        makeChoice();
+
+
+
+
+    }
+
+    private void delteDialoge() {
+
+        deleteItemDialoge = new Dialog(HomeActivity.this);
+        deleteItemDialoge.setTitle("Delete ?");
+        deleteItemDialoge.setContentView(R.layout.delete_item_dialoge);
+
+        yesDeleteBtn = (Button) deleteItemDialoge.findViewById(R.id.delte_yes_button);
+        noDeleteBtn = (Button) deleteItemDialoge.findViewById(R.id.delte_no_button);
+
+        yesDeleteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //yes delete
+            }
+        });
+        noDeleteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //no delete
+            }
+        });
+    }
+
+    private void makeChoice() {
+        //choice action
+        makeChoiceBuilder = new Dialog(HomeActivity.this);
+        makeChoiceBuilder.setContentView(R.layout.make_choice_builder);
+        makeChoiceBuilder.setTitle("Choice ..");
+
+        choiceDelteTv = (TextView) makeChoiceBuilder.findViewById(R.id.delete_choice_tv);
+        choiceEditTv = (TextView) makeChoiceBuilder.findViewById(R.id.edit_choice_tv);
+        choiceDisplayTv = (TextView) makeChoiceBuilder.findViewById(R.id.display_choice_tv);
+
+        choiceDisplayTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //display item
+                Toast.makeText(HomeActivity.this, "display item", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+        choiceEditTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //edit item
+                Toast.makeText(HomeActivity.this, "edit item", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+        choiceDelteTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //delete item
+
+                deleteItemDialoge.show();
+            }
+        });
+
+
+
+    }
+
+    private void loadNavigation() {
+
         mSuperMarketReference.child("image").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -214,19 +317,6 @@ public class HomeActivity extends AppCompatActivity
                 }
             });
         }
-        //create view
-        itemRecyclerView = (RecyclerView) findViewById(R.id.items_list);
-        itemRecyclerView.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(this);
-        itemRecyclerView.setLayoutManager(layoutManager);
-
-        loadmenu();
-
-
-        builder = new AlertDialog.Builder(HomeActivity.this);
-        builder.setMessage("Are you sure, you want to Sign out ?").setPositiveButton("Yes", dialogClickListener)
-                .setNegativeButton("No", dialogClickListener);
-
     }
 
     private void loadmenu() {
@@ -267,57 +357,12 @@ public class HomeActivity extends AppCompatActivity
                     @Override
                     public void onCLick(View view, int position, boolean isLongClick) {
 
-                        Toast.makeText(HomeActivity.this, "ok ", Toast.LENGTH_SHORT).show();
-                        editBtn = (ImageButton) view.findViewById(R.id.edit_item_btn);
-                        deleteBtn = (ImageButton) view.findViewById(R.id.delete_item_btn);
-
-                        deleteBtn.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                Toast.makeText(HomeActivity.this, "action delete", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                        /* Intent foodListIntent = new Intent(Home.this, FoodList.class);
-                        foodListIntent.putExtra("categoryID",adapter.getRef(position).getKey());
-                        startActivity(foodListIntent);*/
+                        makeChoiceBuilder.show();
                     }
                 });
             }
 
-            @Override
-            public ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-                ItemViewHolder viewHolder = super.onCreateViewHolder(parent, viewType);
-                viewHolder.setItemclickListener(new ItemClickListener() {
-                    @Override
-                    public void onCLick(View view, int position, boolean isLongClick) {
 
-                        if (isLongClick == true) {
-                            //long click
-                            view.findViewById(R.id.delete_item_btn).setOnClickListener(
-                                    new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            Toast.makeText(HomeActivity.this, "delete item", Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
-                            );
-                            view.findViewById(R.id.edit_item_btn).setOnClickListener(
-                                    new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            Toast.makeText(HomeActivity.this, "delete item", Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
-                            );
-
-                        } else if (isLongClick == false) {
-                            //small click
-
-                        }
-                    }
-                });
-                return viewHolder;
-            }
         };
         itemRecyclerView.setAdapter(adapter);
 
@@ -379,7 +424,7 @@ public class HomeActivity extends AppCompatActivity
 
 
         } else if (id == R.id.nav_sign_out) {
-            builder.show();
+            signOutBuilder.show();
 
 
         }
