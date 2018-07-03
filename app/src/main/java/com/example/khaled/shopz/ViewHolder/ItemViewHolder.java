@@ -37,6 +37,7 @@ public class ItemViewHolder  extends RecyclerView.ViewHolder implements View.OnC
             @Override
             public void onClick(View view) {
                 itemClickListener.onCLick(view , getAdapterPosition(),false);
+
             }
         });
 

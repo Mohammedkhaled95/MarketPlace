@@ -1,84 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+<ScrollView android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:weightSum="10"
-    tools:context="com.example.khaled.shopz.AddNewItemActivity">
+    android:background="@color/colorMain"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-
-    <RelativeLayout
-        android:id="@+id/image_layout"
-    android:layout_width="match_parent"
-    android:layout_height="0dp"
-    android:layout_weight="2"
-    android:layout_margin="8dp"
-
-    >
-
-
-    <ImageView
-        android:id="@+id/product_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/selsect_icon"
-        android:layout_centerInParent="true"
-        />
-
-</RelativeLayout>
-
-    <LinearLayout
-        android:id="@+id/product_fields"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="8"
-        android:layout_marginTop="16dp"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:weightSum="10"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:paddingTop="56dp"
         >
-        <EditText
-            android:id="@+id/product_name"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="2"
-            android:layout_margin="8dp"
-            android:hint="  product name"
-            />
 
-        <EditText
-            android:id="@+id/product_price"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="2"
-            android:layout_margin="8dp"
-            android:hint="  product price"
-            />
-        <EditText
-            android:id="@+id/product_describtion"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="5"
-            android:layout_margin="8dp"
-            android:hint=" describe your product here "
-            android:inputType="textMultiLine"
-            android:gravity="start"
-            android:minLines="2"
-            android:lines="5"
-            android:maxLines="8"
-            android:scrollbars="vertical"
-            />
-        <ImageButton
-            android:id="@+id/add_product_btn"
+
+
+        <ImageView
+            android:id="@+id/product_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/colorMain"
-            android:src="@drawable/add"
-            android:layout_gravity="center"
-            android:layout_marginTop="16dp"
+            android:src="@drawable/selsect_icon"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center_horizontal"
             />
 
-    </LinearLayout>
 
-</LinearLayout>
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            app:hintTextAppearance="@color/colorWhite"
+            android:textColorHint="@color/colorWhite"
+            >
+            <EditText
+                android:id="@+id/product_name"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="  product name"
+                android:textColor="@color/colorWhite"
+                android:drawablePadding="8dp"
+                android:fontFamily="casual"
+                android:singleLine="true"
+
+
+
+                />
+        </android.support.design.widget.TextInputLayout>
+
+
+
+        <!-- Email Label -->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            app:hintTextAppearance="@color/colorWhite"
+            android:textColorHint="@color/colorWhite"
+            >
+            <EditText
+                android:id="@+id/product_price"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="  product price"
+                android:singleLine="true"
+                android:textColor="@color/colorWhite"
+
+                />
+
+        </android.support.design.widget.TextInputLayout>
+
+
+        <!-- Email Label -->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            app:hintTextAppearance="@color/colorWhite"
+            android:textColorHint="@color/colorWhite"
+            >
+
+            <EditText
+                android:id="@+id/product_describtion"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint=" describe your product here "
+                android:gravity="start"
+                android:inputType="textMultiLine"
+                android:textColor="@color/colorWhite"
+                android:scrollbars="vertical"
+                />
+        </android.support.design.widget.TextInputLayout>
+
+            <ImageButton
+                android:id="@+id/add_product_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/colorMain"
+                android:src="@drawable/add"
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp"
+                />
+
+        </LinearLayout>
+
+
+</ScrollView>

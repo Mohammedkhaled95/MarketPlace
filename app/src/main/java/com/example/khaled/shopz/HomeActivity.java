@@ -13,6 +13,7 @@ import android.support.v7.view.menu.MenuView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -39,8 +40,15 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity  implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -53,7 +61,10 @@ public class HomeActivity extends AppCompatActivity  implements NavigationView.O
     FirebaseUser currentUser;
 
 
-    Item clickItem;
+    int clickedPosition;
+    List<Item> items;
+    Item value;
+    String itemDeletID;
 
     String name;
     String phone;
@@ -131,6 +142,7 @@ public class HomeActivity extends AppCompatActivity  implements NavigationView.O
         navEmail = (TextView) navheader.findViewById(R.id.nav_email);
 
 
+
         //intailize firebase
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
@@ -150,6 +162,34 @@ public class HomeActivity extends AppCompatActivity  implements NavigationView.O
         itemRecyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         itemRecyclerView.setLayoutManager(layoutManager);
+
+       items = new ArrayList<Item>();
+
+       mItemsReference.addValueEventListener(new ValueEventListener() {
+           @Override
+           public void onDataChange(DataSnapshot dataSnapshot) {
+
+
+            for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
+            Item value = postSnapshot.getValue(Item.class);
+                   Log.e("Get Data", value.getDescription());
+                   items.add(value);
+
+
+               }
+
+
+           }
+
+           @Override
+           public void onCancelled(DatabaseError databaseError) {
+
+           }
+
+
+
+       });
+
 
         //load menu of items
         loadmenu();
@@ -185,17 +225,22 @@ public class HomeActivity extends AppCompatActivity  implements NavigationView.O
             @Override
             public void onClick(View view) {
                 //yes delete
+
+               // mItemsReference.child(itemDeletID).child("description").removeValue();
+
             }
         });
         noDeleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //no delete
+                deleteItemDialoge.dismiss();
             }
         });
     }
 
     private void makeChoice() {
+
         //choice action
         makeChoiceBuilder = new Dialog(HomeActivity.this);
         makeChoiceBuilder.setContentView(R.layout.make_choice_builder);
@@ -209,7 +254,7 @@ public class HomeActivity extends AppCompatActivity  implements NavigationView.O
             @Override
             public void onClick(View view) {
                 //display item
-                Toast.makeText(HomeActivity.this, "display item", Toast.LENGTH_SHORT).show();
+                displayItem();
             }
         });
 
@@ -219,6 +264,7 @@ public class HomeActivity extends AppCompatActivity  implements NavigationView.O
             public void onClick(View view) {
                 //edit item
                 Toast.makeText(HomeActivity.this, "edit item", Toast.LENGTH_SHORT).show();
+
 
             }
         });
@@ -235,7 +281,24 @@ public class HomeActivity extends AppCompatActivity  implements NavigationView.O
 
 
     }
+    private void displayItem() {
 
+        Log.e(TAG, "items sizeeeeeeee: "+items.size() );
+        Log.e(TAG, "items content: "+items.get(clickedPosition).getDescription() );
+
+
+        Intent i = new Intent( HomeActivity.this,AddNewItemActivity.class);
+
+        i.putExtra("display", "1");
+        Log.e(TAG, "clicked .............. : "+clickedPosition);
+        i.putExtra("image",items.get(clickedPosition).getImage());
+        i.putExtra("name",items.get(clickedPosition).getName());
+        i.putExtra("price",items.get(clickedPosition).getPrice());
+        i.putExtra("description",items.get(clickedPosition).getDescription());
+        makeChoiceBuilder.dismiss();
+        startActivity(i);
+
+    }
     private void loadNavigation() {
 
         mSuperMarketReference.child("image").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -326,37 +389,54 @@ public class HomeActivity extends AppCompatActivity  implements NavigationView.O
                         R.layout.items_list_item,
                         ItemViewHolder.class,
                         mItemsReference) {
+            @Override
+            public ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.items_list_item, parent, false);
+
+
+                ItemViewHolder itemViewHolder = super.onCreateViewHolder(parent,viewType);
+                itemViewHolder.setItemclickListener(new ItemClickListener() {
+                    @Override
+                    public void onCLick(View view, int position, boolean isLongClick) {
+                        //click item
+
+
+                    }
+                });
+
+
+                return new ItemViewHolder(view);
+
+            }
 
             @Override
-            protected void populateViewHolder(ItemViewHolder viewHolder, Item model, int position) {
+            protected void populateViewHolder(ItemViewHolder viewHolder, final Item model, int position) {
 
                 viewHolder.itemName.setText(model.getName());
-                viewHolder.itemPrice.setText("Price : " + model.getPrice() + " $");
+                viewHolder.itemPrice.setText("Price : " + model.getPrice() + " EGP");
                 viewHolder.itemDescription.setText(model.getDescription());
-
-                Log.e(TAG, "populateViewHolder: menu  :" + model.toString());
-
 
                 if (!model.getImage().isEmpty()) {
                     Picasso.with(getBaseContext()).load(model.getImage())
                             .into(viewHolder.itemImage);
                 } else {
-                    Picasso.with(getBaseContext())
-                            .load(R.drawable.plusbutton)
-                            .into(viewHolder.itemImage);
+                   // viewHolder.itemImage.setImageDrawable(getResources().getDrawable(R.drawable.logo_white));
+
                 }
-
-                Log.e(TAG, "populateViewHolder: imaaaaage " + model.getImage());
-
-                clickItem = model;
-
 
                 viewHolder.setItemclickListener(new ItemClickListener() {
 
 
                     @Override
                     public void onCLick(View view, int position, boolean isLongClick) {
+                        //المكان اهو
+                        //here you get the clicked position
+                        Log.e(TAG, "onCLick: "+model.toString() );
 
+
+
+                        clickedPosition = position;
                         makeChoiceBuilder.show();
                     }
                 });

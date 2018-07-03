@@ -2,6 +2,7 @@ package com.example.khaled.shopz;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -28,6 +29,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AddNewItemActivity extends AppCompatActivity {
 
@@ -36,6 +41,9 @@ public class AddNewItemActivity extends AppCompatActivity {
     String createdID;
 
     private Uri imageUri;
+
+    Intent displayedIntent;
+    static List<String> itemsIDS;
 
 
 
@@ -81,6 +89,7 @@ public class AddNewItemActivity extends AppCompatActivity {
 
         mItemRefernce = mDatabase.getReference("SuperMarkets").child(current_user.getUid()).child("items");
         mStorageRef = FirebaseStorage.getInstance().getReference("Images");
+
 
 
         productImg.setOnClickListener(new View.OnClickListener() {
@@ -130,6 +139,54 @@ public class AddNewItemActivity extends AppCompatActivity {
                 }
             }
         });
+        
+        if (getIntent() != null){
+             displayedIntent = getIntent();
+            String s = displayedIntent.getStringExtra("display");
+
+            if (s!= null ){
+                if ( s.equals("1")){
+                    Toast.makeText(this, "from Display", Toast.LENGTH_SHORT).show();
+                    froozenDisplay();
+                }
+
+            else
+            {
+                Toast.makeText(this, "from add ", Toast.LENGTH_SHORT).show();
+            }
+            }
+        }
+
+    }
+
+    private void froozenDisplay() {
+
+
+
+        if (displayedIntent.getStringExtra("image")!= null &&
+                !displayedIntent.getStringExtra("image").isEmpty()){
+
+            Picasso.with(AddNewItemActivity.this)
+                    .load(displayedIntent.getStringExtra("image"))
+                    .into(productImg);
+            productImg.setClickable(false);
+        }else {
+            productImg.setImageDrawable(getResources().getDrawable(R.drawable.user_account_photo));
+            productImg.setClickable(false);
+        }
+
+        productNameEt.setText(displayedIntent.getStringExtra("name"));
+        productNameEt.setFocusable(false);
+
+        productPriceEt.setText(displayedIntent.getStringExtra("price"));
+        productPriceEt.setFocusable(false);
+
+        productDescriptionEt.setText(displayedIntent.getStringExtra("description"));
+        productDescriptionEt.setFocusable(false);
+
+        addProductBtn.setEnabled(false);
+        addProductBtn.setVisibility(View.GONE);
+
 
     }
 
@@ -159,6 +216,9 @@ public class AddNewItemActivity extends AppCompatActivity {
         //superMarket.setImageURL(imageUri.toString());
 
          createdID = mItemRefernce.push().getKey();
+
+        itemsIDS = new ArrayList<String>();
+        itemsIDS.add(createdID);
         mItemRefernce.child(createdID).setValue(product)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override

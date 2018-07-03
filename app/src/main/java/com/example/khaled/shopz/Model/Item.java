@@ -7,18 +7,20 @@ public class Item {
 
     private String description;
     private String image;
-
-    public Uri getFimage() {
-        return fimage;
-    }
-
-    public void setFimage(Uri fimage) {
-        this.fimage = fimage;
-    }
-
-    private Uri fimage;
     private String name;
     private String price;
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    private String key;
+
+
 
 
     public Item() {
