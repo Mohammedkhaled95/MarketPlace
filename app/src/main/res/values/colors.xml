@@ -7,6 +7,8 @@
 
     <color name="colorMain">#016B8C</color>
     <color name="colorRed">#ff0000</color>
+
     <color name="colorWhite">#FFFFFF</color>
+    <color name="yes_choice">#00CC85</color>
 
 </resources>

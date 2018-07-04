@@ -27,7 +27,7 @@
         <LinearLayout
             android:id="@+id/choice_button_layout"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="70dp"
             android:orientation="horizontal"
             android:layout_below="@id/delete_tv"
             android:layout_margin="8dp"
@@ -42,6 +42,11 @@
                 android:layout_height="match_parent"
                 android:text="Yes"
                 android:layout_margin="8dp"
+                android:background="@color/yes_choice"
+                android:textColor="@color/colorWhite"
+                android:textStyle="bold"
+                android:fontFamily="casual"
+                android:textSize="18sp"
 
                 />
             <Button
@@ -51,6 +56,11 @@
                 android:layout_height="match_parent"
                 android:text="No"
                 android:layout_margin="8dp"
+                android:background="@color/colorRed"
+                android:textColor="@color/colorWhite"
+                android:textStyle="bold"
+                android:fontFamily="casual"
+                android:textSize="18sp"
 
                 />
 

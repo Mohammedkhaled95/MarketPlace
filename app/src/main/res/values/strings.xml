@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ShopZ</string>
+    <string name="app_name">Market Place</string>
     <string name="title_activity_home">Home</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>

@@ -52,7 +52,7 @@ public class SignupActivity extends AppCompatActivity {
     FirebaseAuth mAuth;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference superMarket_table;
-    StorageReference mStorageRef;
+    StorageReference mRegImgStorageRef;
     FirebaseUser current_user;
 
 
@@ -89,7 +89,7 @@ public class SignupActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
         superMarket_table = firebaseDatabase.getReference("SuperMarkets");
-        mStorageRef = FirebaseStorage.getInstance().getReference("Images");
+        mRegImgStorageRef = FirebaseStorage.getInstance().getReference("Images");
 
 
 
@@ -117,15 +117,10 @@ public class SignupActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-
-
-
                 progressDialog.show();
 
 
                   if ( !isValidInputs() ){
-
-
                       progressDialog.dismiss();
                       Toast.makeText(SignupActivity.this, "Not valid inputs", Toast.LENGTH_SHORT).show();
                   }
@@ -197,11 +192,13 @@ public class SignupActivity extends AppCompatActivity {
 
                         String current_user_id  = current_user.getUid();
 
-                        mStorageRef.child(current_user_id+".jpeg").putFile(imageUri)
+                        mRegImgStorageRef.child(current_user_id+".jpeg").putFile(imageUri)
                                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                                     @Override
                                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
                                         String downloadedImage = taskSnapshot.getDownloadUrl().toString();
+
                                         superMarket_table.child(current_user.getUid())
                                                 .child("image").setValue(downloadedImage)
                                         .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -213,6 +210,8 @@ public class SignupActivity extends AppCompatActivity {
                                         .addOnFailureListener(new OnFailureListener() {
                                             @Override
                                             public void onFailure(@NonNull Exception e) {
+                                                Toast.makeText(SignupActivity.this, "image failed saved to DB", Toast.LENGTH_SHORT).show();
+
                                                 Log.e(TAG, "onFailure: of return image url to table *** "+e.getMessage()+"\n"+e.toString() );
                                                 progressDialog.dismiss();
 

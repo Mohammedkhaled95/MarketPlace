@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -83,6 +84,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                progressDialog.show();
 
                 login();
 
@@ -99,56 +101,9 @@ public class LoginActivity extends AppCompatActivity {
 
 
 
-    void loginAction(){
-
-
-        {
-            String email = emailEt.getText().toString();
-            String password = passwordEt.getText().toString();
-            Log.e(TAG, "onClick: "+email+"  "+password );
-
-            mAuth.signInWithEmailAndPassword(email, password)
-
-                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                // Sign in success, update UI with the signed-in user's information
-                                Log.e(TAG, "signInWithEmail:success");
-                                FirebaseUser user = mAuth.getCurrentUser();
-
-                                Intent loginIntent =new Intent(LoginActivity.this , HomeActivity.class);
-                                loginIntent.putExtra("currentUser",user.getEmail());
-
-                                startActivity(loginIntent);
-
-
-                            } else {
-                                // If sign in fails, display a message to the user.
-                                Log.e(TAG, "signInWithEmail:failure", task.getException());
-                                progressDialog.dismiss();
-
-                            }
-
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(LoginActivity.this, "failed", Toast.LENGTH_SHORT).show();
-                    Log.e(TAG, "onFailure: "+e.toString()+"\n"+e.getMessage() );
-                }
-            });
-        }
-               /* if (isValidInputs()) else
-                {
-                    Toast.makeText(LoginActivity.this, "Not Valid inputs", Toast.LENGTH_SHORT).show();
-                }*/
-        //handle login process
-
-    }
-
     public void login() {
         Log.d(TAG, "Login");
+
 
 
         if (!validate()) {
@@ -156,7 +111,6 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        progressDialog.show();
 
             loginBtn.setEnabled(false);
 
@@ -180,6 +134,45 @@ public class LoginActivity extends AppCompatActivity {
 
         }
 
+    void loginAction(){
+
+
+        {
+            String email = emailEt.getText().toString();
+            String password = passwordEt.getText().toString();
+            Log.e(TAG, "onClick: "+email+"  "+password );
+
+            mAuth.signInWithEmailAndPassword(email, password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                @Override
+                public void onSuccess(AuthResult authResult) {
+                        // Sign in success, update UI with the signed-in user's information
+                        Log.e(TAG, "signInWithEmail:success");
+                        FirebaseUser user = mAuth.getCurrentUser();
+
+                        Intent loginIntent =new Intent(LoginActivity.this , HomeActivity.class);
+                        loginIntent.putExtra("currentUser",user.getEmail());
+
+                        startActivity(loginIntent);
+
+
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(LoginActivity.this, "failed", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "onFailure: "+e.toString()+"\n"+e.getMessage() );
+                }
+            });
+        }
+               /* if (isValidInputs()) else
+                {
+                    Toast.makeText(LoginActivity.this, "Not Valid inputs", Toast.LENGTH_SHORT).show();
+                }*/
+        //handle login process
+
+    }
+
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -200,12 +193,14 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void onLoginSuccess() {
+        progressDialog.dismiss();
         loginBtn.setEnabled(true);
         finish();
     }
 
     public void onLoginFailed() {
         Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
+        progressDialog.dismiss();
 
         loginBtn.setEnabled(true);
     }

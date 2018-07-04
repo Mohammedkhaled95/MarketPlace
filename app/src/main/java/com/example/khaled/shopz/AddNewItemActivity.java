@@ -38,7 +38,7 @@ public class AddNewItemActivity extends AppCompatActivity {
 
     private static final int PICK_IMAGE = 1;
     private static final String TAG = "AddNewItemActivity";
-    String createdID;
+    static String createdID;
 
     private Uri imageUri;
 
@@ -226,7 +226,7 @@ public class AddNewItemActivity extends AppCompatActivity {
                         Toast.makeText(AddNewItemActivity.this, "product Data Saved", Toast.LENGTH_SHORT).show();
 
 
-                        mStorageRef.child("itemsIamges").child(createdID + ".jpeg").putFile(imageUri)
+                        mStorageRef.child(createdID + ".jpeg").putFile(imageUri)
                                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                                     @Override
                                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -234,7 +234,7 @@ public class AddNewItemActivity extends AppCompatActivity {
                                         Log.e(TAG, "onSuccess: "+taskSnapshot.toString() );
                                             Toast.makeText(AddNewItemActivity.this, "image saved", Toast.LENGTH_SHORT).show();
 
-                                            mStorageRef.child("itemsIamges").child(current_user.getUid() + ".jpeg").getDownloadUrl()
+                                            mStorageRef.child(current_user.getUid() + ".jpeg").getDownloadUrl()
                                                     .addOnSuccessListener(new OnSuccessListener<Uri>() {
                                                         @Override
                                                         public void onSuccess(Uri uri) {
@@ -252,6 +252,7 @@ public class AddNewItemActivity extends AppCompatActivity {
                                 }).addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
+                                progressDialog.dismiss();
                                 Toast.makeText(AddNewItemActivity.this, "image saving failed", Toast.LENGTH_SHORT).show();
                                 Log.e(TAG, "onFailure: " + e.getMessage() + "\n" + e.toString());
 

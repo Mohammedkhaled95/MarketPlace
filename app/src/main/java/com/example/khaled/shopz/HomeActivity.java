@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.Image;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.view.menu.MenuView;
@@ -34,8 +35,11 @@ import com.example.khaled.shopz.Interface.ItemClickListener;
 import com.example.khaled.shopz.Model.Item;
 import com.example.khaled.shopz.ViewHolder.ItemViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -226,7 +230,31 @@ public class HomeActivity extends AppCompatActivity  implements NavigationView.O
             public void onClick(View view) {
                 //yes delete
 
-               // mItemsReference.child(itemDeletID).child("description").removeValue();
+
+                //mItemsReference.child("-LGCbVrF13IKruK0LOB5").removeValue();
+
+               if (AddNewItemActivity.itemsIDS != null ){
+
+                   mItemsReference.child(AddNewItemActivity.itemsIDS.get(clickedPosition)).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                       @Override
+                       public void onSuccess(Void aVoid) {
+                           deleteItemDialoge.dismiss();
+
+                       }
+                   }).addOnFailureListener(new OnFailureListener() {
+                       @Override
+                       public void onFailure(@NonNull Exception e) {
+                           Toast.makeText(HomeActivity.this, "failed to remove item", Toast.LENGTH_SHORT).show();
+                       }
+                   });
+               }
+               else{
+                   Toast.makeText(HomeActivity.this, "Deleted..", Toast.LENGTH_SHORT).show();
+
+                   makeChoiceBuilder.dismiss();
+                    deleteItemDialoge.dismiss();
+               }
+                
 
             }
         });
@@ -255,6 +283,8 @@ public class HomeActivity extends AppCompatActivity  implements NavigationView.O
             public void onClick(View view) {
                 //display item
                 displayItem();
+                makeChoiceBuilder.dismiss();
+
             }
         });
 
@@ -264,6 +294,7 @@ public class HomeActivity extends AppCompatActivity  implements NavigationView.O
             public void onClick(View view) {
                 //edit item
                 Toast.makeText(HomeActivity.this, "edit item", Toast.LENGTH_SHORT).show();
+                makeChoiceBuilder.dismiss();
 
 
             }
@@ -275,6 +306,8 @@ public class HomeActivity extends AppCompatActivity  implements NavigationView.O
                 //delete item
 
                 deleteItemDialoge.show();
+                makeChoiceBuilder.dismiss();
+
             }
         });
 
@@ -295,7 +328,6 @@ public class HomeActivity extends AppCompatActivity  implements NavigationView.O
         i.putExtra("name",items.get(clickedPosition).getName());
         i.putExtra("price",items.get(clickedPosition).getPrice());
         i.putExtra("description",items.get(clickedPosition).getDescription());
-        makeChoiceBuilder.dismiss();
         startActivity(i);
 
     }
